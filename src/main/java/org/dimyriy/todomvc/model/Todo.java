@@ -7,9 +7,10 @@ import javax.persistence.*;
  * @date 16/02/16
  */
 @Entity
+@SequenceGenerator(allocationSize = 1, name = "uniq_id", sequenceName = "uniq_id")
 public class Todo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "uniq_id")
     private long id;
     @Column
     private String title;
