@@ -1,0 +1,45 @@
+package org.dimyriy.todomvc.model;
+
+import javax.persistence.*;
+
+/**
+ * @author dimyriy
+ * @date 16/02/16
+ */
+@Entity
+public class Todo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column
+    private String title;
+    @Column
+    private Boolean completed;
+
+    public Todo() {
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+}
