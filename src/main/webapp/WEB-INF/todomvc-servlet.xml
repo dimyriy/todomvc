@@ -12,8 +12,8 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
     <context:component-scan base-package="org.dimyriy.todomvc"/>
-    <tx:annotation-driven/>
-    <jdbc:embedded-database id="dataSource" database-name="todos" type="HSQL">
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <jdbc:embedded-database id="dataSource" type="HSQL">
         <jdbc:script location="classpath:db/create-db.sql"/>
         <jdbc:script location="classpath:db/insert-data.sql"/>
     </jdbc:embedded-database>
@@ -27,7 +27,7 @@
     </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
+        <property name="dataSource" ref="dbcpDataSource"/>
         <property name="packagesToScan" value="org.dimyriy.todomvc.model"/>
         <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
         <property name="jpaProperties">
@@ -46,5 +46,14 @@
 
     <bean name="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
         <property name="prettyPrint" value="false"/>
+    </bean>
+
+    <bean id="dbcpDataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+          destroy-method="close" depends-on="dataSource">
+        <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+        <property name="url" value="jdbc:hsqldb:mem:dataSource"/>
+        <property name="username" value="sa"/>
+        <property name="password" value=""/>
+        <property name="validationQuery" value="select 1 from INFORMATION_SCHEMA.SYSTEM_USERS;"/>
     </bean>
 </beans>

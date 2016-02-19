@@ -27,6 +27,7 @@
         <slf4j.version>1.7.16</slf4j.version>
         <hibernate.version>5.1.0.Final</hibernate.version>
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <commons-pool.version>2.1.1</commons-pool.version>
     </properties>
 
     <dependencyManagement>
@@ -122,6 +123,11 @@
                 <version>${javax.servlet-api.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>${commons-pool.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -177,6 +183,10 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
         </dependency>
     </dependencies>
 
