@@ -121,7 +121,7 @@ public class TodoControllerTest {
     public void testPut() {
         given(repository.findOne(COMPLETED_TODO_ID)).willReturn(COMPLETED_TODO);
         given(repository.save(COMPLETED_TODO)).willReturn(COMPLETED_TODO);
-        Todo result = when(todoController).save(COMPLETED_TODO);
+        Todo result = when(todoController).update(COMPLETED_TODO_ID, COMPLETED_TODO);
         then(result).isEqualToComparingFieldByField(COMPLETED_TODO);
         ArgumentCaptor<Todo> argumentCaptor = ArgumentCaptor.forClass(Todo.class);
         verify(repository, times(1)).findOne(COMPLETED_TODO_ID);
