@@ -309,6 +309,7 @@
     </dependencies>
 
     <build>
+        <defaultGoal>jetty:run</defaultGoal>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -356,4 +357,22 @@
             </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.6.201602180812</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
