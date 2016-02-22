@@ -16,7 +16,6 @@ import java.util.Comparator;
 
 import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
 import static com.googlecode.catchexception.apis.BDDCatchException.when;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
@@ -49,13 +48,15 @@ public class TodoControllerTest {
     @Test
     public void testFindAllReturnsAllItems() {
         given(repository.findAll()).willReturn(Arrays.asList(COMPLETED_TODO, UNCOMPLETED_TODO));
-        assertThat(todoController.findAll()).usingFieldByFieldElementComparator().containsOnly(COMPLETED_TODO, UNCOMPLETED_TODO);
+        Iterable<Todo> result = when(todoController.findAll());
+        then(result).usingFieldByFieldElementComparator().containsOnly(COMPLETED_TODO, UNCOMPLETED_TODO);
     }
 
     @Test
     public void testFindAllReturnsEmptyCollectionOnEmptyData() {
         given(repository.findAll()).willReturn(Collections.emptyList());
-        assertThat(todoController.findAll()).isEmpty();
+        Iterable<Todo> result = when(todoController.findAll());
+        then(result).isEmpty();
     }
 
     @Test
