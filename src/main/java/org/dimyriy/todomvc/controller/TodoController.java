@@ -24,7 +24,10 @@ public class TodoController {
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
     public Todo findOne(@PathVariable("id") long id) {
-        return todoRepository.findOne(id);
+        Todo todo = todoRepository.findOne(id);
+        if (todo == null)
+            throw new ResourceNotFoundException();
+        return todo;
     }
 
     @Transactional
