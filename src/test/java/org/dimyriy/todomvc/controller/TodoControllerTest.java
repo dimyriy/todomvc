@@ -4,6 +4,7 @@ import org.dimyriy.todomvc.model.Todo;
 import org.dimyriy.todomvc.repository.TodoRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -15,6 +16,7 @@ import java.util.Collections;
 
 import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
 import static com.googlecode.catchexception.apis.BDDCatchException.when;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
@@ -102,6 +104,34 @@ public class TodoControllerTest {
         verifyNoMoreInteractions(repository);
     }
 
+    @Test
+    public void testPost() {
+        given(repository.save(NEW_TODO)).willReturn(UNCOMPLETED_TODO);
+        Todo result = when(todoController).save(NEW_TODO);
+        then(result).isEqualToComparingFieldByField(UNCOMPLETED_TODO);
+        ArgumentCaptor<Todo> argumentCaptor = ArgumentCaptor.forClass(Todo.class);
+        verify(repository, times(1)).save(argumentCaptor.capture());
+        Todo value = argumentCaptor.getValue();
+        assertThat(value.getTitle().equals(UNCOMPLETED_TODO.getTitle()));
+        assertThat(value.isCompleted().equals(UNCOMPLETED_TODO.isCompleted()));
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    public void testPut() {
+        given(repository.findOne(COMPLETED_TODO_ID)).willReturn(COMPLETED_TODO);
+        given(repository.save(COMPLETED_TODO)).willReturn(COMPLETED_TODO);
+        Todo result = when(todoController).save(COMPLETED_TODO);
+        then(result).isEqualToComparingFieldByField(COMPLETED_TODO);
+        ArgumentCaptor<Todo> argumentCaptor = ArgumentCaptor.forClass(Todo.class);
+        verify(repository, times(1)).findOne(COMPLETED_TODO_ID);
+        verify(repository, times(1)).save(argumentCaptor.capture());
+        Todo value = argumentCaptor.getValue();
+        assertThat(value.getTitle().equals(COMPLETED_TODO.getTitle()));
+        assertThat(value.isCompleted().equals(COMPLETED_TODO.isCompleted()));
+        assertThat(value.getId()).isEqualTo(COMPLETED_TODO_ID);
+        verifyNoMoreInteractions(repository);
+    }
 
     public static class TodoBuilder {
         private final Todo todo = new Todo();
