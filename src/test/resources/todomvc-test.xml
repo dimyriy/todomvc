@@ -2,7 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
-    <bean id="todoRepository" class="org.mockito.Mockito" factory-method="mock">
+
+    <bean id="todoRepositoryMock" class="org.mockito.Mockito" factory-method="mock">
         <constructor-arg value="org.dimyriy.todomvc.repository.TodoRepository"/>
     </bean>
 </beans>

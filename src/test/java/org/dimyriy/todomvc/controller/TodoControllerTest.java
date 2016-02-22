@@ -2,104 +2,71 @@ package org.dimyriy.todomvc.controller;
 
 import org.dimyriy.todomvc.model.Todo;
 import org.dimyriy.todomvc.repository.TodoRepository;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
-import static com.jayway.jsonassert.impl.matcher.IsCollectionWithSize.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyLong;
 
 /**
  * @author dimyriy
  * @date 22/02/16
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
+@RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration({"classpath:todomvc-test.xml", "classpath:todomvc-web.xml"})
 public class TodoControllerTest {
-    @Autowired
-    WebApplicationContext webApplicationContext;
-    @Autowired
+    static final Comparator<Todo> todoComparator = (o1, o2) -> {
+        if (o1.getTitle().equals(o2.getTitle()) && o1.isCompleted().equals(o2.isCompleted()))
+            return 0;
+        return -1;
+    };
+    private static final long COMPLETED_TODO_ID = 1;
+    private static final long UNCOMPLETED_TODO_ID = 1;
+    private static final String COMPLETED_TODO_TITLE = "Some title";
+    static final Todo COMPLETED_TODO = new TodoBuilder().andId(COMPLETED_TODO_ID).andTitle(COMPLETED_TODO_TITLE).completed().build();
+    private static final String UNCOMPLETED_TODO_TITLE = "Some other title";
+    static final Todo UNCOMPLETED_TODO = new TodoBuilder().andId(UNCOMPLETED_TODO_ID).andTitle(UNCOMPLETED_TODO_TITLE).build();
+    static final Todo NEW_TODO = new TodoBuilder().andTitle(UNCOMPLETED_TODO_TITLE).build();
+    @InjectMocks
     TodoController todoController;
-    private MockMvc mockMvc;
-    @Autowired
-    private TodoRepository todoRepositoryMock;
 
-    @Before
-    public void setUp() {
-        Mockito.reset(todoRepositoryMock);
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    @Mock
+    TodoRepository repository;
+
+    @Test
+    public void testFindAllReturnsAllItems() {
+        given(repository.findAll()).willReturn(Arrays.asList(COMPLETED_TODO, UNCOMPLETED_TODO));
+        assertThat(todoController.findAll()).usingFieldByFieldElementComparator().containsOnly(COMPLETED_TODO, UNCOMPLETED_TODO);
     }
 
     @Test
-    public void findAll() throws Exception {
-        Todo first = new TodoBuilder().andId(1L).andTitle("Some title").andCompleted(false).build();
-        Todo second = new TodoBuilder().andId(2L).andTitle("Some other title").andCompleted(true).build();
-        Mockito.when(todoRepositoryMock.findAll()).thenReturn(Arrays.asList(first, second));
-        mockMvc.perform(get("/api/todos"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].title", is("Some title")))
-                .andExpect(jsonPath("$[0].completed", is(false)))
-                .andExpect(jsonPath("$[1].id", is(2)))
-                .andExpect(jsonPath("$[1].title", is("Some other title")))
-                .andExpect(jsonPath("$[1].completed", is(true)));
-        verify(todoRepositoryMock, times(1)).findAll();
-        verifyNoMoreInteractions(todoRepositoryMock);
+    public void testFindAllReturnsEmptyCollectionOnEmptyData() {
+        given(repository.findAll()).willReturn(Collections.emptyList());
+        assertThat(todoController.findAll()).isEmpty();
     }
 
     @Test
-    public void findOne() throws Exception {
-        Todo first = new TodoBuilder().andId(1L).andTitle("Some title").andCompleted(false).build();
-        Mockito.when(todoRepositoryMock.findOne(1L)).thenReturn(first);
-        mockMvc.perform(get("/api/todos/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.title", is("Some title")))
-                .andExpect(jsonPath("$.completed", is(false)));
-        verify(todoRepositoryMock, times(1)).findOne(1L);
-        verifyNoMoreInteractions(todoRepositoryMock);
+    public void testFindOneReturnsNotFoundOnEmptyData() {
+        given(repository.findOne(anyLong())).willReturn(null);
+        assertThat(todoController.findOne(anyLong()));
     }
 
-    @Test
-    public void deleteCompleted() throws Exception {
-
-    }
-
-    @Test
-    public void delete() throws Exception {
-
-    }
-
-    @Test
-    public void save() throws Exception {
-
-    }
-
-    @Test
-    public void update() throws Exception {
-
-    }
 
     public static class TodoBuilder {
         private final Todo todo = new Todo();
+
+        public TodoBuilder() {
+            todo.setCompleted(false);
+        }
 
         private TodoBuilder andId(long id) {
             todo.setId(id);
@@ -111,8 +78,8 @@ public class TodoControllerTest {
             return this;
         }
 
-        private TodoBuilder andCompleted(boolean completed) {
-            todo.setCompleted(completed);
+        private TodoBuilder completed() {
+            todo.setCompleted(true);
             return this;
         }
 
