@@ -12,13 +12,13 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 
 import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
 import static com.googlecode.catchexception.apis.BDDCatchException.when;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.*;
 
 /**
  * @author dimyriy
@@ -27,11 +27,6 @@ import static org.mockito.Matchers.anyLong;
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration({"classpath:todomvc-test.xml", "classpath:todomvc-web.xml"})
 public class TodoControllerTest {
-    static final Comparator<Todo> todoComparator = (o1, o2) -> {
-        if (o1.getTitle().equals(o2.getTitle()) && o1.isCompleted().equals(o2.isCompleted()))
-            return 0;
-        return -1;
-    };
     private static final long COMPLETED_TODO_ID = 1;
     private static final long UNCOMPLETED_TODO_ID = 1;
     private static final String COMPLETED_TODO_TITLE = "Some title";
@@ -50,6 +45,8 @@ public class TodoControllerTest {
         given(repository.findAll()).willReturn(Arrays.asList(COMPLETED_TODO, UNCOMPLETED_TODO));
         Iterable<Todo> result = when(todoController.findAll());
         then(result).usingFieldByFieldElementComparator().containsOnly(COMPLETED_TODO, UNCOMPLETED_TODO);
+        verify(repository, times(1)).findAll();
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -57,13 +54,17 @@ public class TodoControllerTest {
         given(repository.findAll()).willReturn(Collections.emptyList());
         Iterable<Todo> result = when(todoController.findAll());
         then(result).isEmpty();
+        verify(repository, times(1)).findAll();
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
     public void testFindOneReturnsNotFoundOnEmptyData() {
         given(repository.findOne(anyLong())).willReturn(null);
-        when(todoController).findOne(anyLong());
+        when(todoController).findOne(COMPLETED_TODO_ID);
         then(caughtException()).isInstanceOf(ResourceNotFoundException.class);
+        verify(repository, times(1)).findOne(COMPLETED_TODO_ID);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -71,6 +72,27 @@ public class TodoControllerTest {
         given(repository.findOne(COMPLETED_TODO_ID)).willReturn(COMPLETED_TODO);
         Todo result = when(todoController).findOne(COMPLETED_TODO_ID);
         then(result).isEqualToComparingFieldByField(result);
+        verify(repository, times(1)).findOne(COMPLETED_TODO_ID);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    public void testDeleteExistingDataCompletesNormally() {
+        given(repository.exists(COMPLETED_TODO_ID)).willReturn(true);
+        when(todoController).delete(COMPLETED_TODO_ID);
+        verify(repository, times(1)).delete(COMPLETED_TODO_ID);
+        verify(repository, times(1)).exists(COMPLETED_TODO_ID);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    public void testDeleteNonExisting() {
+        given(repository.exists(COMPLETED_TODO_ID)).willReturn(false);
+        when(todoController).delete(COMPLETED_TODO_ID);
+        then(caughtException()).isInstanceOf(ResourceNotFoundException.class);
+        verify(repository, times(0)).delete(COMPLETED_TODO_ID);
+        verify(repository, times(1)).exists(COMPLETED_TODO_ID);
+        verifyNoMoreInteractions(repository);
     }
 
 
