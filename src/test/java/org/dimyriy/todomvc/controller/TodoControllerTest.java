@@ -43,36 +43,36 @@ public class TodoControllerTest {
     TodoRepository repository;
 
     @Test
-    public void testFindAllReturnsAllItems() {
+    public void testGetAllReturnsAllItems() {
         given(repository.findAll()).willReturn(Arrays.asList(COMPLETED_TODO, UNCOMPLETED_TODO));
-        Iterable<Todo> result = when(todoController.findAll());
+        Iterable<Todo> result = when(todoController.getAll());
         then(result).usingFieldByFieldElementComparator().containsOnly(COMPLETED_TODO, UNCOMPLETED_TODO);
         verify(repository, times(1)).findAll();
         verifyNoMoreInteractions(repository);
     }
 
     @Test
-    public void testFindAllReturnsEmptyCollectionOnEmptyData() {
+    public void testGetAllReturnsEmptyCollectionOnEmptyData() {
         given(repository.findAll()).willReturn(Collections.emptyList());
-        Iterable<Todo> result = when(todoController.findAll());
+        Iterable<Todo> result = when(todoController.getAll());
         then(result).isEmpty();
         verify(repository, times(1)).findAll();
         verifyNoMoreInteractions(repository);
     }
 
     @Test
-    public void testFindOneReturnsNotFoundOnEmptyData() {
+    public void testGetReturnsNotFoundOnEmptyData() {
         given(repository.findOne(anyLong())).willReturn(null);
-        when(todoController).findOne(COMPLETED_TODO_ID);
+        when(todoController).get(COMPLETED_TODO_ID);
         then(caughtException()).isInstanceOf(ResourceNotFoundException.class);
         verify(repository, times(1)).findOne(COMPLETED_TODO_ID);
         verifyNoMoreInteractions(repository);
     }
 
     @Test
-    public void testFindOneReturnsRightValueOnExistingData() {
+    public void testGetReturnsRightValueOnExistingData() {
         given(repository.findOne(COMPLETED_TODO_ID)).willReturn(COMPLETED_TODO);
-        Todo result = when(todoController).findOne(COMPLETED_TODO_ID);
+        Todo result = when(todoController).get(COMPLETED_TODO_ID);
         then(result).isEqualToComparingFieldByField(result);
         verify(repository, times(1)).findOne(COMPLETED_TODO_ID);
         verifyNoMoreInteractions(repository);
@@ -105,9 +105,9 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void testPost() {
+    public void testCreate() {
         given(repository.save(NEW_TODO)).willReturn(UNCOMPLETED_TODO);
-        Todo result = when(todoController).save(NEW_TODO);
+        Todo result = when(todoController).create(NEW_TODO);
         then(result).isEqualToComparingFieldByField(UNCOMPLETED_TODO);
         ArgumentCaptor<Todo> argumentCaptor = ArgumentCaptor.forClass(Todo.class);
         verify(repository, times(1)).save(argumentCaptor.capture());
@@ -118,7 +118,7 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void testPut() {
+    public void testUpdate() {
         given(repository.findOne(COMPLETED_TODO_ID)).willReturn(COMPLETED_TODO);
         given(repository.save(COMPLETED_TODO)).willReturn(COMPLETED_TODO);
         Todo result = when(todoController).update(COMPLETED_TODO_ID, COMPLETED_TODO);

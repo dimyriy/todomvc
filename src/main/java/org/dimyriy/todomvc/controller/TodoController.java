@@ -18,12 +18,12 @@ public class TodoController {
     private TodoRepository todoRepository;
 
     @RequestMapping(path = "", method = RequestMethod.GET)
-    public Iterable<Todo> findAll() {
+    public Iterable<Todo> getAll() {
         return todoRepository.findAll();
     }
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
-    public Todo findOne(@PathVariable("id") long id) {
+    public Todo get(@PathVariable("id") long id) {
         Todo todo = todoRepository.findOne(id);
         if (todo == null)
             throw new ResourceNotFoundException();
@@ -46,14 +46,14 @@ public class TodoController {
 
     @Transactional
     @RequestMapping(path = "", method = RequestMethod.POST)
-    public Todo save(@RequestBody Todo entity) {
+    public Todo create(@RequestBody Todo entity) {
         return todoRepository.save(entity);
     }
 
     @Transactional
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public Todo update(@PathVariable("id") long id, @RequestBody Todo entity) {
-        Todo oldEntity = findOne(id);
+        Todo oldEntity = get(id);
         if (entity.getTitle() != null)
             oldEntity.setTitle(entity.getTitle());
         if (entity.isCompleted() != null) {
