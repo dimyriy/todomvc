@@ -95,6 +95,13 @@ public class TodoControllerTest {
         verifyNoMoreInteractions(repository);
     }
 
+    @Test
+    public void testDeleteCompleted() {
+        when(todoController).deleteCompleted();
+        verify(repository, times(1)).deleteByCompleted(true);
+        verifyNoMoreInteractions(repository);
+    }
+
 
     public static class TodoBuilder {
         private final Todo todo = new Todo();
