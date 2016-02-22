@@ -10,5 +10,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource(path = "todoshal", collectionResourceRel = "todos")
 public interface TodoRepository extends CrudRepository<Todo, Long> {
-    Iterable<Todo> deleteByCompleted(boolean completed);
+    void deleteByCompleted(boolean completed);
 }

@@ -3,6 +3,7 @@ package org.dimyriy.todomvc.controller;
 import org.dimyriy.todomvc.model.Todo;
 import org.dimyriy.todomvc.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,15 +28,17 @@ public class TodoController {
     }
 
     @Transactional
-    @RequestMapping(path = "", method = RequestMethod.DELETE)
-    public void deleteCompleted() {
-        todoRepository.deleteByCompleted(true);
+    @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
+    public void delete(@PathVariable("id") long id) {
+        if (!todoRepository.exists(id))
+            throw new ResourceNotFoundException();
+        todoRepository.delete(id);
     }
 
     @Transactional
-    @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable("id") long id) {
-        todoRepository.delete(id);
+    @RequestMapping(path = "", method = RequestMethod.DELETE)
+    public void deleteCompleted() {
+        todoRepository.deleteByCompleted(true);
     }
 
     @Transactional
