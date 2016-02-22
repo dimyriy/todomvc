@@ -7,15 +7,19 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
+import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.when;
 
 /**
  * @author dimyriy
@@ -57,7 +61,8 @@ public class TodoControllerTest {
     @Test
     public void testFindOneReturnsNotFoundOnEmptyData() {
         given(repository.findOne(anyLong())).willReturn(null);
-        assertThat(todoController.findOne(anyLong()));
+        when(todoController.findAll());
+        then(caughtException()).isInstanceOf(ResourceNotFoundException.class);
     }
 
 
