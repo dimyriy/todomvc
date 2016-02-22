@@ -14,34 +14,34 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/todos")
 public class TodoController {
     @Autowired
-    private TodoRepository repository;
+    private TodoRepository todoRepository;
 
     @RequestMapping(path = "", method = RequestMethod.GET)
     public Iterable<Todo> findAll() {
-        return repository.findAll();
+        return todoRepository.findAll();
     }
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
     public Todo findOne(@PathVariable("id") long id) {
-        return repository.findOne(id);
+        return todoRepository.findOne(id);
     }
 
     @Transactional
     @RequestMapping(path = "", method = RequestMethod.DELETE)
     public void deleteCompleted() {
-        repository.deleteByCompleted(true);
+        todoRepository.deleteByCompleted(true);
     }
 
     @Transactional
     @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") long id) {
-        repository.delete(id);
+        todoRepository.delete(id);
     }
 
     @Transactional
     @RequestMapping(path = "", method = RequestMethod.POST)
     public Todo save(@RequestBody Todo entity) {
-        return repository.save(entity);
+        return todoRepository.save(entity);
     }
 
     @Transactional
@@ -53,6 +53,6 @@ public class TodoController {
         if (entity.isCompleted() != null) {
             oldEntity.setCompleted(entity.isCompleted());
         }
-        return repository.save(oldEntity);
+        return todoRepository.save(oldEntity);
     }
 }
