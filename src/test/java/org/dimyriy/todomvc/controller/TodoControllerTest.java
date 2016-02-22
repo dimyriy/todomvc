@@ -15,11 +15,11 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
+import static com.googlecode.catchexception.apis.BDDCatchException.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.when;
 
 /**
  * @author dimyriy
@@ -61,7 +61,7 @@ public class TodoControllerTest {
     @Test
     public void testFindOneReturnsNotFoundOnEmptyData() {
         given(repository.findOne(anyLong())).willReturn(null);
-        when(todoController.findAll());
+        when(todoController).findOne(anyLong());
         then(caughtException()).isInstanceOf(ResourceNotFoundException.class);
     }
 
