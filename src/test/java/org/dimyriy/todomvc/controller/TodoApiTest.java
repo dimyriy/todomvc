@@ -89,7 +89,7 @@ public class TodoApiTest {
     }
 
     @Test
-    public void findOne() throws Exception {
+    public void testGetById() throws Exception {
         Todo todo = COMPLETED_TODO;
         long id = todo.getId();
         Mockito.when(repository.findOne(id)).thenReturn(todo);
@@ -100,7 +100,7 @@ public class TodoApiTest {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void testDeleteByIdExisting() throws Exception {
         Mockito.when(repository.exists(UNCOMPLETED_TODO.getId())).thenReturn(true);
         mockMvc.perform(delete("/api/todos/" + UNCOMPLETED_TODO.getId()))
                 .andExpect(status().isOk());
@@ -110,7 +110,7 @@ public class TodoApiTest {
     }
 
     @Test
-    public void testDeleteMissing() throws Exception {
+    public void testDeleteByIdMissing() throws Exception {
         Mockito.when(repository.exists(UNCOMPLETED_TODO.getId())).thenReturn(false);
         mockMvc.perform(delete("/api/todos/" + UNCOMPLETED_TODO.getId()))
                 .andExpect(status().isNotFound());
@@ -120,7 +120,16 @@ public class TodoApiTest {
     }
 
     @Test
-    public void testSave() throws Exception {
+    public void testDeleteCompleted() throws Exception {
+        Mockito.when(repository.exists(UNCOMPLETED_TODO.getId())).thenReturn(true);
+        mockMvc.perform(delete("/api/todos"))
+                .andExpect(status().isOk());
+        verify(repository, times(1)).deleteByCompleted(true);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    public void testCreate() throws Exception {
         Mockito.when(repository.save((Todo) anyObject())).thenReturn(UNCOMPLETED_TODO);
         String jsonContent = new Gson().toJson(NEW_TODO);
         expectUncompletedTodo(
@@ -139,7 +148,7 @@ public class TodoApiTest {
     }
 
     @Test
-    public void testUpdate() throws Exception {
+    public void testUpdateExisting() throws Exception {
         Mockito.when(repository.findOne(UNCOMPLETED_TODO.getId())).thenReturn(UNCOMPLETED_TODO);
         Mockito.when(repository.save(UNCOMPLETED_TODO)).thenReturn(UNCOMPLETED_TODO);
         String jsonContent = new Gson().toJson(UNCOMPLETED_TODO);
@@ -160,7 +169,18 @@ public class TodoApiTest {
     }
 
     @Test
-    public void deleteCompleted() {
+    public void testUpdateMissing() throws Exception {
+        Mockito.when(repository.findOne(UNCOMPLETED_TODO.getId())).thenReturn(null);
+        Mockito.when(repository.save(UNCOMPLETED_TODO)).thenReturn(UNCOMPLETED_TODO);
+        String jsonContent = new Gson().toJson(UNCOMPLETED_TODO);
+        mockMvc.perform(
+                put("/api/todos/" + UNCOMPLETED_TODO.getId())
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(jsonContent))
+                .andExpect(status().isNotFound());
+        verify(repository, times(1)).findOne(UNCOMPLETED_TODO.getId());
+        verify(repository, times(0)).save(ArgumentCaptor.forClass(Todo.class).capture());
+        verifyNoMoreInteractions(repository);
     }
 
     private ResultActions expectCompletedTodo(ResultActions resultActions) throws Exception {

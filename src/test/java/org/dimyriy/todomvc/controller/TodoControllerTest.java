@@ -133,6 +133,17 @@ public class TodoControllerTest {
         verifyNoMoreInteractions(repository);
     }
 
+    @Test
+    public void testUpdateMissing() {
+        given(repository.findOne(COMPLETED_TODO_ID)).willReturn(null);
+        given(repository.save((Todo) anyObject())).willReturn(COMPLETED_TODO);
+        when(todoController).update(COMPLETED_TODO_ID, COMPLETED_TODO);
+        then(caughtException()).isInstanceOf(ResourceNotFoundException.class);
+        verify(repository, times(1)).findOne(COMPLETED_TODO_ID);
+        verify(repository, times(0)).save(ArgumentCaptor.forClass(Todo.class).capture());
+        verifyNoMoreInteractions(repository);
+    }
+
     public static class TodoBuilder {
         private final Todo todo = new Todo();
 
