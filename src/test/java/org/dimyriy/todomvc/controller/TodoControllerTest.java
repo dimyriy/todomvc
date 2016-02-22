@@ -66,7 +66,16 @@ public class TodoControllerTest {
 
     @Test
     public void findOne() throws Exception {
-
+        Todo first = new TodoBuilder().andId(1L).andTitle("Some title").andCompleted(false).build();
+        Mockito.when(todoRepositoryMock.findOne(1L)).thenReturn(first);
+        mockMvc.perform(get("/api/todos/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.title", is("Some title")))
+                .andExpect(jsonPath("$.completed", is(false)));
+        verify(todoRepositoryMock, times(1)).findOne(1L);
+        verifyNoMoreInteractions(todoRepositoryMock);
     }
 
     @Test
