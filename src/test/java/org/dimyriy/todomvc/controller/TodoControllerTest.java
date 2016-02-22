@@ -66,6 +66,13 @@ public class TodoControllerTest {
         then(caughtException()).isInstanceOf(ResourceNotFoundException.class);
     }
 
+    @Test
+    public void testFindOneReturnsRightValueOnExistingData() {
+        given(repository.findOne(COMPLETED_TODO_ID)).willReturn(COMPLETED_TODO);
+        Todo result = when(todoController).findOne(COMPLETED_TODO_ID);
+        then(result).isEqualToComparingFieldByField(result);
+    }
+
 
     public static class TodoBuilder {
         private final Todo todo = new Todo();
