@@ -23,7 +23,7 @@ public class TodoController {
     }
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
-    public Todo get(@PathVariable("id") long id) {
+    public Todo getById(@PathVariable long id) {
         Todo todo = todoRepository.findOne(id);
         if (todo == null)
             throw new ResourceNotFoundException();
@@ -32,7 +32,7 @@ public class TodoController {
 
     @Transactional
     @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable("id") long id) {
+    public void delete(@PathVariable long id) {
         if (!todoRepository.exists(id))
             throw new ResourceNotFoundException();
         todoRepository.delete(id);
@@ -51,9 +51,9 @@ public class TodoController {
     }
 
     @Transactional
-    @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public Todo update(@PathVariable("id") long id, @RequestBody Todo entity) {
-        Todo oldEntity = get(id);
+    @RequestMapping(path = "{id}", method = RequestMethod.PUT)
+    public Todo update(@PathVariable long id, @RequestBody Todo entity) {
+        Todo oldEntity = getById(id);
         if (entity.getTitle() != null)
             oldEntity.setTitle(entity.getTitle());
         if (entity.isCompleted() != null) {
