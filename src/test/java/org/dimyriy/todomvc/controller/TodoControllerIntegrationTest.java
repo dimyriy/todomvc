@@ -1,14 +1,19 @@
 package org.dimyriy.todomvc.controller;
 
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.dimyriy.todomvc.model.Todo;
-import org.dimyriy.todomvc.repository.TodoRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -26,8 +31,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @date 23/02/16
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"classpath:todomvc-persistence.xml", "classpath:todomvc-web.xml"})
+@ContextConfiguration({"classpath:todomvc-persistence-test.xml", "classpath:todomvc-web.xml", "classpath:todomvc-test.xml"})
 @WebAppConfiguration
+@DatabaseSetup(value = "/db/todoDataSet.xml")
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        TransactionDbUnitTestExecutionListener.class
+})
 public class TodoControllerIntegrationTest {
 
     @Autowired
@@ -37,16 +49,19 @@ public class TodoControllerIntegrationTest {
     TodoController todoController;
     private MockMvc mockMvc;
 
-    @Autowired
-    private TodoRepository repository;
-
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+
     @Test
-    public void findAllReturnsRightCollection() throws Exception {
+    public void testCreateReturnsRightValue() {
+
+    }
+
+    @Test
+    public void testGetAllReturnsAllItems() throws Exception {
         Todo first = COMPLETED_TODO;
         Todo second = UNCOMPLETED_TODO;
         mockMvc.perform(get("/api/todos"))
