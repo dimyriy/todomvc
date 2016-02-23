@@ -2,6 +2,7 @@ package org.dimyriy.todomvc.controller;
 
 import org.dimyriy.todomvc.model.Todo;
 import org.dimyriy.todomvc.repository.TodoRepository;
+import org.dimyriy.todomvc.util.TodoBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -144,30 +145,4 @@ public class TodoControllerTest {
         verifyNoMoreInteractions(repository);
     }
 
-    public static class TodoBuilder {
-        private final Todo todo = new Todo();
-
-        public TodoBuilder() {
-            todo.setCompleted(false);
-        }
-
-        private TodoBuilder andId(long id) {
-            todo.setId(id);
-            return this;
-        }
-
-        private TodoBuilder andTitle(String title) {
-            todo.setTitle(title);
-            return this;
-        }
-
-        private TodoBuilder completed() {
-            todo.setCompleted(true);
-            return this;
-        }
-
-        private Todo build() {
-            return todo;
-        }
-    }
 }

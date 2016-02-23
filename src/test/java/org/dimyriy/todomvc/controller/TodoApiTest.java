@@ -1,8 +1,8 @@
 package org.dimyriy.todomvc.controller;
 
-import com.google.gson.Gson;
 import org.dimyriy.todomvc.model.Todo;
 import org.dimyriy.todomvc.repository.TodoRepository;
+import org.dimyriy.todomvc.util.TodoBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +25,7 @@ import java.util.Collections;
 import static com.jayway.jsonassert.impl.matcher.IsCollectionWithSize.hasSize;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.dimyriy.todomvc.controller.TodoControllerTest.*;
+import static org.dimyriy.todomvc.util.TodoBuilder.toJsonExcludingId;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -142,7 +143,7 @@ public class TodoApiTest {
     @Test
     public void testCreateReturnsRightValue() throws Exception {
         Mockito.when(repository.save((Todo) anyObject())).thenReturn(UNCOMPLETED_TODO);
-        String jsonContent = new Gson().toJson(NEW_TODO);
+        String jsonContent = toJsonExcludingId(NEW_TODO);
         expectUncompletedTodo(
                 mockMvc.perform(post("/api/todos")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -162,7 +163,7 @@ public class TodoApiTest {
     public void testUpdateExistingReturnsRightValue() throws Exception {
         Mockito.when(repository.findOne(UNCOMPLETED_TODO.getId())).thenReturn(UNCOMPLETED_TODO);
         Mockito.when(repository.save(UNCOMPLETED_TODO)).thenReturn(UNCOMPLETED_TODO);
-        String jsonContent = new Gson().toJson(UNCOMPLETED_TODO);
+        String jsonContent = TodoBuilder.toJsonExcludingId(UNCOMPLETED_TODO);
         expectUncompletedTodo(mockMvc.perform(
                 put("/api/todos/" + UNCOMPLETED_TODO.getId())
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -183,7 +184,7 @@ public class TodoApiTest {
     public void testUpdateMissingIsNotFound() throws Exception {
         Mockito.when(repository.findOne(UNCOMPLETED_TODO.getId())).thenReturn(null);
         Mockito.when(repository.save(UNCOMPLETED_TODO)).thenReturn(UNCOMPLETED_TODO);
-        String jsonContent = new Gson().toJson(UNCOMPLETED_TODO);
+        String jsonContent = toJsonExcludingId(UNCOMPLETED_TODO);
         mockMvc.perform(
                 put("/api/todos/" + UNCOMPLETED_TODO.getId())
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
