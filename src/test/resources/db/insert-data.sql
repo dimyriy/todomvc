@@ -1,0 +1,2 @@
+INSERT INTO todo (ID, COMPLETED, TITLE) VALUES (NEXT VALUE FOR uniq_id, TRUE, 'Some title');
+INSERT INTO todo (ID, COMPLETED, TITLE) VALUES (NEXT VALUE FOR uniq_id, FALSE, 'Some other title');
