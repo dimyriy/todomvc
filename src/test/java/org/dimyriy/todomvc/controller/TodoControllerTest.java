@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration({"classpath:todomvc-test.xml", "classpath:todomvc-web.xml"})
 public class TodoControllerTest {
     private static final long COMPLETED_TODO_ID = 1;
-    private static final long UNCOMPLETED_TODO_ID = 1;
+    private static final long UNCOMPLETED_TODO_ID = 2;
     private static final String COMPLETED_TODO_TITLE = "Some title";
     static final Todo COMPLETED_TODO = new TodoBuilder().andId(COMPLETED_TODO_ID).andTitle(COMPLETED_TODO_TITLE).completed().build();
     private static final String UNCOMPLETED_TODO_TITLE = "Some other title";
