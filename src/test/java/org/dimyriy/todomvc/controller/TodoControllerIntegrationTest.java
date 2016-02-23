@@ -143,6 +143,22 @@ public class TodoControllerIntegrationTest {
                 .andExpect(status().isOk());
     }
 
+    @DatabaseSetup("/db/todoOneElementDataSet.xml")
+    @ExpectedDatabase("/db/todoEmptyDataSet.xml")
+    @Test
+    public void testDeleteLastElementByIdIsOk() throws Exception {
+        mockMvc.perform(delete("/api/todos/1"))
+                .andExpect(status().isOk());
+    }
+
+    @DatabaseSetup("/db/todoOneElementDataSet.xml")
+    @ExpectedDatabase("/db/todoEmptyDataSet.xml")
+    @Test
+    public void testDeleteCompletedWhenDataContainsOnlyCompletedIsOk() throws Exception {
+        mockMvc.perform(delete("/api/todos"))
+                .andExpect(status().isOk());
+    }
+
     @DatabaseSetup("/db/todoDataSet.xml")
     @ExpectedDatabase("/db/todoDataSet.xml")
     @Test
