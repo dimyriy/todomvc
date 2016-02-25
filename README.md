@@ -8,6 +8,7 @@ mvn jetty:run
 ```
 and open <http://localhost:8080> in your favorite browser.
 
+
 The application is also hosted on heroku and can be accessed using following link <http://todomvc-dimyriy.herokuapp.com>
 ### Testing
 Thanks to [Travis](http://travis-ci.org), the results of unit and integration tests can be seen at [Travis CI
