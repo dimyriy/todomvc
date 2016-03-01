@@ -3,9 +3,16 @@ package org.dimyriy.todomvc.controller;
 import org.dimyriy.todomvc.model.Todo;
 import org.dimyriy.todomvc.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.composed.web.Delete;
+import org.springframework.composed.web.Get;
+import org.springframework.composed.web.Post;
+import org.springframework.composed.web.Put;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author dimyriy
@@ -17,12 +24,12 @@ public class TodoController {
     @Autowired
     private TodoRepository todoRepository;
 
-    @RequestMapping(path = "", method = RequestMethod.GET)
+    @Get
     public Iterable<Todo> getAll() {
         return todoRepository.findAll();
     }
 
-    @RequestMapping(path = "{id}", method = RequestMethod.GET)
+    @Get("{id}")
     public Todo getById(@PathVariable long id) {
         Todo todo = todoRepository.findOne(id);
         if (todo == null)
@@ -31,7 +38,7 @@ public class TodoController {
     }
 
     @Transactional
-    @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
+    @Delete("{id}")
     public void delete(@PathVariable long id) {
         if (!todoRepository.exists(id))
             throw new ResourceNotFoundException();
@@ -39,19 +46,19 @@ public class TodoController {
     }
 
     @Transactional
-    @RequestMapping(path = "", method = RequestMethod.DELETE)
+    @Delete
     public void deleteCompleted() {
         todoRepository.deleteByCompleted(true);
     }
 
     @Transactional
-    @RequestMapping(path = "", method = RequestMethod.POST)
+    @Post
     public Todo create(@RequestBody Todo entity) {
         return todoRepository.save(entity);
     }
 
     @Transactional
-    @RequestMapping(path = "{id}", method = RequestMethod.PUT)
+    @Put("{id}")
     public Todo update(@PathVariable long id, @RequestBody Todo entity) {
         Todo oldEntity = getById(id);
         if (entity.getTitle() != null)
